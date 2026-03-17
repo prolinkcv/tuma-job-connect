@@ -2,13 +2,13 @@ import { Link } from 'react-router-dom';
 import { MapPin, Building, Clock, Calendar, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Job, JobStatus } from '@/data/jobs';
+import type { DbJob } from '@/hooks/useJobs';
 
 interface JobCardProps {
-  job: Job;
+  job: DbJob;
 }
 
-const statusConfig: Record<JobStatus, { label: string; className: string }> = {
+const statusConfig: Record<string, { label: string; className: string }> = {
   open: { label: 'OPEN', className: 'bg-accent text-accent-foreground' },
   urgent: { label: 'URGENT', className: 'bg-urgent text-urgent-foreground animate-pulse-gentle' },
   'closing-soon': { label: 'CLOSING SOON', className: 'bg-warning text-warning-foreground' },
@@ -17,28 +17,24 @@ const statusConfig: Record<JobStatus, { label: string; className: string }> = {
 };
 
 const JobCard = ({ job }: JobCardProps) => {
-  const status = statusConfig[job.status];
+  const status = statusConfig[job.status] || statusConfig.open;
   const isActive = job.status !== 'filled';
 
   return (
     <div className={`group relative bg-card rounded-xl border border-border p-5 transition-all duration-300 hover:shadow-card-hover hover:border-primary/20 ${!isActive ? 'opacity-75' : ''}`}>
-      {/* Status Badge */}
       <Badge className={`absolute top-4 right-4 ${status.className}`}>
         {status.label}
       </Badge>
 
-      {/* Job Title */}
       <h3 className="font-semibold text-lg text-foreground mb-2 pr-24 line-clamp-2">
         {job.title}
       </h3>
 
-      {/* Facility */}
       <div className="flex items-center gap-2 text-muted-foreground mb-3">
         <Building className="h-4 w-4 flex-shrink-0" />
         <span className="text-sm truncate">{job.facility}</span>
       </div>
 
-      {/* Details Row */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground mb-4">
         <div className="flex items-center gap-1.5">
           <MapPin className="h-4 w-4" />
@@ -46,22 +42,19 @@ const JobCard = ({ job }: JobCardProps) => {
         </div>
         <div className="flex items-center gap-1.5">
           <Clock className="h-4 w-4" />
-          <span className="capitalize">{job.jobType.replace('-', ' ')}</span>
+          <span className="capitalize">{job.job_type.replace('-', ' ')}</span>
         </div>
       </div>
 
-      {/* Salary */}
       {job.salary && (
         <p className="text-sm font-medium text-accent mb-4">{job.salary}</p>
       )}
 
-      {/* Date Posted */}
       <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-4">
         <Calendar className="h-3.5 w-3.5" />
-        <span>Posted {new Date(job.datePosted).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+        <span>Posted {new Date(job.date_posted).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
       </div>
 
-      {/* Action */}
       <Button 
         variant={isActive ? 'accent' : 'secondary'} 
         size="sm" 
