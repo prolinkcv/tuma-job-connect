@@ -14,16 +14,168 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      employer_submissions: {
+        Row: {
+          contact: string
+          description: string
+          facility_name: string
+          how_to_apply: string
+          id: string
+          location: string
+          logo_url: string | null
+          position: string
+          requirements: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          salary_range: string | null
+          status: string
+          submitted_at: string
+        }
+        Insert: {
+          contact: string
+          description: string
+          facility_name: string
+          how_to_apply: string
+          id?: string
+          location: string
+          logo_url?: string | null
+          position: string
+          requirements?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          salary_range?: string | null
+          status?: string
+          submitted_at?: string
+        }
+        Update: {
+          contact?: string
+          description?: string
+          facility_name?: string
+          how_to_apply?: string
+          id?: string
+          location?: string
+          logo_url?: string | null
+          position?: string
+          requirements?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          salary_range?: string | null
+          status?: string
+          submitted_at?: string
+        }
+        Relationships: []
+      }
+      jobs: {
+        Row: {
+          category: Database["public"]["Enums"]["job_category"]
+          closing_date: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          contact_whatsapp: string | null
+          county: string
+          created_at: string
+          date_posted: string
+          description: string
+          facility: string
+          how_to_apply: string
+          id: string
+          job_type: Database["public"]["Enums"]["job_type"]
+          location: string
+          requirements: string[]
+          salary: string | null
+          salary_max: number | null
+          salary_min: number | null
+          status: Database["public"]["Enums"]["job_status"]
+          title: string
+          updated_at: string
+          views: number
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["job_category"]
+          closing_date?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          contact_whatsapp?: string | null
+          county: string
+          created_at?: string
+          date_posted?: string
+          description: string
+          facility: string
+          how_to_apply: string
+          id?: string
+          job_type?: Database["public"]["Enums"]["job_type"]
+          location: string
+          requirements?: string[]
+          salary?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          status?: Database["public"]["Enums"]["job_status"]
+          title: string
+          updated_at?: string
+          views?: number
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["job_category"]
+          closing_date?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          contact_whatsapp?: string | null
+          county?: string
+          created_at?: string
+          date_posted?: string
+          description?: string
+          facility?: string
+          how_to_apply?: string
+          id?: string
+          job_type?: Database["public"]["Enums"]["job_type"]
+          location?: string
+          requirements?: string[]
+          salary?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          status?: Database["public"]["Enums"]["job_status"]
+          title?: string
+          updated_at?: string
+          views?: number
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin"
+      job_category: "healthcare" | "admin" | "ngo" | "internship" | "locum"
+      job_status: "open" | "urgent" | "closing-soon" | "shortlisting" | "filled"
+      job_type: "full-time" | "part-time" | "locum" | "contract" | "internship"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +302,11 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin"],
+      job_category: ["healthcare", "admin", "ngo", "internship", "locum"],
+      job_status: ["open", "urgent", "closing-soon", "shortlisting", "filled"],
+      job_type: ["full-time", "part-time", "locum", "contract", "internship"],
+    },
   },
 } as const
