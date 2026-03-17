@@ -8,19 +8,16 @@ import JobSearch from '@/components/jobs/JobSearch';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import { jobs, categories, counties, JobCategory, JobType } from '@/data/jobs';
+import { categories, counties } from '@/data/jobs';
+import { useJobs } from '@/hooks/useJobs';
 
 const Jobs = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
+  const { jobs, loading } = useJobs();
 
-  // Get filter values from URL
   const query = searchParams.get('q') || '';
   const location = searchParams.get('location') || '';
   const facility = searchParams.get('facility') || '';
@@ -30,72 +27,34 @@ const Jobs = () => {
 
   const handleSearch = (newQuery: string, newLocation: string, newFacility: string) => {
     const params = new URLSearchParams(searchParams);
-    if (newQuery) params.set('q', newQuery);
-    else params.delete('q');
-    if (newLocation) params.set('location', newLocation);
-    else params.delete('location');
-    if (newFacility) params.set('facility', newFacility);
-    else params.delete('facility');
+    if (newQuery) params.set('q', newQuery); else params.delete('q');
+    if (newLocation) params.set('location', newLocation); else params.delete('location');
+    if (newFacility) params.set('facility', newFacility); else params.delete('facility');
     setSearchParams(params);
   };
 
   const handleFilterChange = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams);
-    if (value && value !== 'all') {
-      params.set(key, value);
-    } else {
-      params.delete(key);
-    }
+    if (value && value !== 'all') params.set(key, value); else params.delete(key);
     setSearchParams(params);
   };
 
-  const clearFilters = () => {
-    setSearchParams({});
-  };
+  const clearFilters = () => setSearchParams({});
 
-  // Filter jobs based on search and filters
   const filteredJobs = useMemo(() => {
     return jobs.filter((job) => {
-      // Text search
       if (query) {
-        const searchLower = query.toLowerCase();
-        if (
-          !job.title.toLowerCase().includes(searchLower) &&
-          !job.description.toLowerCase().includes(searchLower) &&
-          !job.facility.toLowerCase().includes(searchLower)
-        ) {
-          return false;
-        }
+        const s = query.toLowerCase();
+        if (!job.title.toLowerCase().includes(s) && !job.description.toLowerCase().includes(s) && !job.facility.toLowerCase().includes(s)) return false;
       }
-
-      // Location filter
-      if (location && !job.location.toLowerCase().includes(location.toLowerCase())) {
-        return false;
-      }
-
-      // Facility filter
-      if (facility && !job.facility.toLowerCase().includes(facility.toLowerCase())) {
-        return false;
-      }
-
-      // Category filter
-      if (category && job.category !== category) {
-        return false;
-      }
-
-      // County filter
-      if (county && job.county !== county) {
-        return false;
-      }
-
-      // Job type filter
-      if (jobType && job.jobType !== jobType) {
-        return false;
-      }
-
+      if (location && !job.location.toLowerCase().includes(location.toLowerCase())) return false;
+      if (facility && !job.facility.toLowerCase().includes(facility.toLowerCase())) return false;
+      if (category && job.category !== category) return false;
+      if (county && job.county !== county) return false;
+      if (jobType && job.job_type !== jobType) return false;
       return true;
     });
-  }, [query, location, facility, category, county, jobType]);
+  }, [jobs, query, location, facility, category, county, jobType]);
 
   const hasActiveFilters = query || location || facility || category || county || jobType;
 
@@ -103,19 +62,13 @@ const Jobs = () => {
     <>
       <Helmet>
         <title>Browse Jobs - Tuma Job | Healthcare Jobs in Kenya</title>
-        <meta
-          name="description"
-          content="Browse verified healthcare job listings in Kenya. Filter by category, location, and job type. Apply easily via WhatsApp."
-        />
+        <meta name="description" content="Browse verified healthcare job listings in Kenya. Filter by category, location, and job type. Apply easily via WhatsApp." />
       </Helmet>
       <Layout>
-        {/* Header */}
         <section className="bg-gradient-to-b from-primary/5 to-background py-8 md:py-12">
           <div className="container">
             <div className="max-w-3xl">
-              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
-                Browse Jobs
-              </h1>
+              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Browse Jobs</h1>
               <p className="text-muted-foreground text-lg">
                 Find your next opportunity from {jobs.length}+ verified listings
               </p>
@@ -123,78 +76,36 @@ const Jobs = () => {
           </div>
         </section>
 
-        {/* Search & Filters */}
         <section className="py-6 border-b border-border bg-background sticky top-16 z-40">
           <div className="container">
             <div className="flex flex-col gap-4">
               <JobSearch onSearch={handleSearch} variant="compact" />
-              
-              {/* Filter Toggle (Mobile) */}
               <div className="flex items-center justify-between md:hidden">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowFilters(!showFilters)}
-                >
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filters
-                  {hasActiveFilters && (
-                    <Badge variant="secondary" className="ml-2">
-                      Active
-                    </Badge>
-                  )}
+                <Button variant="outline" size="sm" onClick={() => setShowFilters(!showFilters)}>
+                  <Filter className="h-4 w-4 mr-2" />Filters
+                  {hasActiveFilters && <Badge variant="secondary" className="ml-2">Active</Badge>}
                 </Button>
                 {hasActiveFilters && (
-                  <Button variant="ghost" size="sm" onClick={clearFilters}>
-                    <X className="h-4 w-4 mr-1" />
-                    Clear
-                  </Button>
+                  <Button variant="ghost" size="sm" onClick={clearFilters}><X className="h-4 w-4 mr-1" />Clear</Button>
                 )}
               </div>
-
-              {/* Filters */}
               <div className={`grid grid-cols-1 md:grid-cols-4 gap-4 ${showFilters ? 'block' : 'hidden md:grid'}`}>
-                <Select
-                  value={category || 'all'}
-                  onValueChange={(value) => handleFilterChange('category', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Category" />
-                  </SelectTrigger>
+                <Select value={category || 'all'} onValueChange={(v) => handleFilterChange('category', v)}>
+                  <SelectTrigger><SelectValue placeholder="Category" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Categories</SelectItem>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
+                    {categories.map((cat) => <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>)}
                   </SelectContent>
                 </Select>
-
-                <Select
-                  value={county || 'all'}
-                  onValueChange={(value) => handleFilterChange('county', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="County" />
-                  </SelectTrigger>
+                <Select value={county || 'all'} onValueChange={(v) => handleFilterChange('county', v)}>
+                  <SelectTrigger><SelectValue placeholder="County" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Counties</SelectItem>
-                    {counties.map((c) => (
-                      <SelectItem key={c} value={c}>
-                        {c}
-                      </SelectItem>
-                    ))}
+                    {counties.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                   </SelectContent>
                 </Select>
-
-                <Select
-                  value={jobType || 'all'}
-                  onValueChange={(value) => handleFilterChange('type', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Job Type" />
-                  </SelectTrigger>
+                <Select value={jobType || 'all'} onValueChange={(v) => handleFilterChange('type', v)}>
+                  <SelectTrigger><SelectValue placeholder="Job Type" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Types</SelectItem>
                     <SelectItem value="full-time">Full-time</SelectItem>
@@ -204,15 +115,9 @@ const Jobs = () => {
                     <SelectItem value="internship">Internship</SelectItem>
                   </SelectContent>
                 </Select>
-
                 {hasActiveFilters && (
-                  <Button
-                    variant="ghost"
-                    onClick={clearFilters}
-                    className="hidden md:flex"
-                  >
-                    <X className="h-4 w-4 mr-2" />
-                    Clear Filters
+                  <Button variant="ghost" onClick={clearFilters} className="hidden md:flex">
+                    <X className="h-4 w-4 mr-2" />Clear Filters
                   </Button>
                 )}
               </div>
@@ -220,36 +125,26 @@ const Jobs = () => {
           </div>
         </section>
 
-        {/* Results */}
         <section className="py-8">
           <div className="container">
-            {/* Results Count */}
             <p className="text-sm text-muted-foreground mb-6">
               Showing {filteredJobs.length} job{filteredJobs.length !== 1 ? 's' : ''}
               {hasActiveFilters && ' (filtered)'}
             </p>
-
-            {/* Jobs Grid */}
-            {filteredJobs.length > 0 ? (
+            {loading ? (
+              <div className="text-center py-16 text-muted-foreground">Loading jobs...</div>
+            ) : filteredJobs.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredJobs.map((job, index) => (
-                  <div
-                    key={job.id}
-                    className="animate-fade-in-up"
-                    style={{ animationDelay: `${Math.min(index * 0.05, 0.3)}s` }}
-                  >
+                  <div key={job.id} className="animate-fade-in-up" style={{ animationDelay: `${Math.min(index * 0.05, 0.3)}s` }}>
                     <JobCard job={job} />
                   </div>
                 ))}
               </div>
             ) : (
               <div className="text-center py-16">
-                <p className="text-lg text-muted-foreground mb-4">
-                  No jobs found matching your criteria
-                </p>
-                <Button variant="outline" onClick={clearFilters}>
-                  Clear Filters
-                </Button>
+                <p className="text-lg text-muted-foreground mb-4">No jobs found matching your criteria</p>
+                <Button variant="outline" onClick={clearFilters}>Clear Filters</Button>
               </div>
             )}
           </div>
