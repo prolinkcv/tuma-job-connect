@@ -33,6 +33,7 @@ const App = () => (
         <AuthProvider>
           <Toaster />
           <Sonner />
+          <CookieConsent />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
