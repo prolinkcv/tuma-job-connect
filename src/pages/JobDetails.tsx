@@ -8,6 +8,7 @@ import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import AdPlaceholder from '@/components/ads/AdPlaceholder';
 import { useJob } from '@/hooks/useJobs';
 
 const statusConfig: Record<string, { label: string; className: string; description: string }> = {
