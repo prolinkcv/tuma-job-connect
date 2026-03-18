@@ -20,6 +20,9 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminJobs from "./pages/admin/AdminJobs";
 import AdminJobForm from "./pages/admin/AdminJobForm";
 import AdminSubmissions from "./pages/admin/AdminSubmissions";
+import SubmitJob from "./pages/SubmitJob";
+import CookiePolicy from "./pages/CookiePolicy";
+import CookieConsent from "./components/CookieConsent";
 
 const queryClient = new QueryClient();
 
