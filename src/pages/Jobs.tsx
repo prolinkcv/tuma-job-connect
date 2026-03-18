@@ -5,6 +5,7 @@ import { Filter, X } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import JobCard from '@/components/jobs/JobCard';
 import JobSearch from '@/components/jobs/JobSearch';
+import AdPlaceholder from '@/components/ads/AdPlaceholder';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
