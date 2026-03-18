@@ -137,16 +137,16 @@ const Jobs = () => {
             ) : filteredJobs.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredJobs.map((job, index) => (
-                  <>
-                    <div key={job.id} className="animate-fade-in-up" style={{ animationDelay: `${Math.min(index * 0.05, 0.3)}s` }}>
+                  <React.Fragment key={job.id}>
+                    <div className="animate-fade-in-up" style={{ animationDelay: `${Math.min(index * 0.05, 0.3)}s` }}>
                       <JobCard job={job} />
                     </div>
                     {index === 5 && (
-                      <div key="ad-in-feed" className="md:col-span-2 lg:col-span-3">
+                      <div className="md:col-span-2 lg:col-span-3">
                         <AdPlaceholder format="in-feed" />
                       </div>
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
               </div>
             ) : (
