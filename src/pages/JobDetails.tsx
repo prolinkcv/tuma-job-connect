@@ -197,6 +197,9 @@ const JobDetails = () => {
                     <Link to="/cover-letter">Generate Cover Letter</Link>
                   </Button>
                 </div>
+                <div className="mt-6">
+                  <AdPlaceholder format="sidebar" />
+                </div>
               </div>
             </div>
           </div>
