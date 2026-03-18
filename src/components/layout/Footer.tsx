@@ -31,6 +31,11 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/submit-job" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+                  Post a Job
+                </Link>
+              </li>
+              <li>
                 <Link to="/cover-letter" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
                   Cover Letter Generator
                 </Link>
