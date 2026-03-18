@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Filter, X } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import JobCard from '@/components/jobs/JobCard';
 import JobSearch from '@/components/jobs/JobSearch';
+import AdPlaceholder from '@/components/ads/AdPlaceholder';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -136,9 +137,16 @@ const Jobs = () => {
             ) : filteredJobs.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredJobs.map((job, index) => (
-                  <div key={job.id} className="animate-fade-in-up" style={{ animationDelay: `${Math.min(index * 0.05, 0.3)}s` }}>
-                    <JobCard job={job} />
-                  </div>
+                  <React.Fragment key={job.id}>
+                    <div className="animate-fade-in-up" style={{ animationDelay: `${Math.min(index * 0.05, 0.3)}s` }}>
+                      <JobCard job={job} />
+                    </div>
+                    {index === 5 && (
+                      <div className="md:col-span-2 lg:col-span-3">
+                        <AdPlaceholder format="in-feed" />
+                      </div>
+                    )}
+                  </React.Fragment>
                 ))}
               </div>
             ) : (

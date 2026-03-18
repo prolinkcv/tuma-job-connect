@@ -10,6 +10,7 @@ const Header = () => {
   const navLinks = [
     { path: '/', label: 'Home' },
     { path: '/jobs', label: 'Browse Jobs' },
+    { path: '/submit-job', label: 'Post a Job' },
     { path: '/cover-letter', label: 'Cover Letter' },
     { path: '/contact', label: 'Contact' },
   ];

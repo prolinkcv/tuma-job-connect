@@ -31,6 +31,11 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/submit-job" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+                  Post a Job
+                </Link>
+              </li>
+              <li>
                 <Link to="/cover-letter" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
                   Cover Letter Generator
                 </Link>
@@ -100,6 +105,9 @@ const Footer = () => {
               </Link>
               <Link to="/terms" className="hover:text-primary-foreground transition-colors">
                 Terms & Conditions
+              </Link>
+              <Link to="/cookie-policy" className="hover:text-primary-foreground transition-colors">
+                Cookie Policy
               </Link>
               <Link to="/disclaimer" className="hover:text-primary-foreground transition-colors">
                 Disclaimer
