@@ -136,6 +136,7 @@ const Jobs = () => {
                   {showExpired ? 'Showing expired jobs' : 'Expired jobs hidden'}
                 </Button>
               </div>
+            </div>
           </div>
         </section>
 
