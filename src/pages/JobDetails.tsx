@@ -36,8 +36,8 @@ const JobDetails = () => {
     );
   }
 
-  const status = statusConfig[job.status] || statusConfig.open;
-  const isActive = job.status !== 'filled';
+  const status = getJobStatusDisplay(job);
+  const isActive = isJobActive(job);
 
   const handleShare = () => {
     const text = `Check out this job: ${job.title} at ${job.facility} - ${window.location.href}`;
