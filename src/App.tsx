@@ -20,6 +20,8 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminJobs from "./pages/admin/AdminJobs";
 import AdminJobForm from "./pages/admin/AdminJobForm";
 import AdminSubmissions from "./pages/admin/AdminSubmissions";
+import AdminTemplates from "./pages/admin/AdminTemplates";
+import AdminCategories from "./pages/admin/AdminCategories";
 import SubmitJob from "./pages/SubmitJob";
 import CookiePolicy from "./pages/CookiePolicy";
 import CookieConsent from "./components/CookieConsent";
@@ -52,6 +54,8 @@ const App = () => (
               <Route path="/admin/jobs/new" element={<ProtectedRoute><AdminJobForm /></ProtectedRoute>} />
               <Route path="/admin/jobs/:id/edit" element={<ProtectedRoute><AdminJobForm /></ProtectedRoute>} />
               <Route path="/admin/submissions" element={<ProtectedRoute><AdminSubmissions /></ProtectedRoute>} />
+              <Route path="/admin/templates" element={<ProtectedRoute><AdminTemplates /></ProtectedRoute>} />
+              <Route path="/admin/categories" element={<ProtectedRoute><AdminCategories /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

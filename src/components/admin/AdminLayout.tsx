@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Briefcase, LayoutDashboard, FileText, LogOut, Inbox } from 'lucide-react';
+import { Briefcase, LayoutDashboard, FileText, LogOut, Inbox, FolderOpen, Tags } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -12,13 +12,14 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
     { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/admin/jobs', label: 'Jobs', icon: Briefcase },
     { path: '/admin/submissions', label: 'Submissions', icon: Inbox },
+    { path: '/admin/templates', label: 'Templates', icon: FileText },
+    { path: '/admin/categories', label: 'Categories', icon: Tags },
   ];
 
   const isActive = (path: string) => location.pathname === path;
 
   return (
     <div className="min-h-screen bg-secondary/30">
-      {/* Top bar */}
       <header className="sticky top-0 z-50 bg-background border-b border-border">
         <div className="container flex h-14 items-center justify-between">
           <div className="flex items-center gap-4">
@@ -53,7 +54,6 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
         </div>
       </header>
 
-      {/* Mobile nav */}
       <nav className="md:hidden border-b border-border bg-background flex overflow-x-auto">
         {navItems.map((item) => (
           <Link
