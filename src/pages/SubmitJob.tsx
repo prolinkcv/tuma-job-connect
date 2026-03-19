@@ -1,14 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Building, MapPin, Send, CheckCircle } from 'lucide-react';
+import { Building, MapPin, Send, CheckCircle, CalendarIcon, FileText, ChevronDown } from 'lucide-react';
 import { z } from 'zod';
+import { format } from 'date-fns';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { cn } from '@/lib/utils';
+
+interface Template {
+  id: string;
+  name: string;
+  type: string;
+  profession: string;
+  items: string[];
+}
 
 const submissionSchema = z.object({
   facility_name: z.string().trim().min(2, 'Facility name is required').max(200),
@@ -26,12 +39,38 @@ const SubmitJob = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [closingDate, setClosingDate] = useState<Date | undefined>();
+  const [description, setDescription] = useState('');
+  const [requirements, setRequirements] = useState('');
+  const [templates, setTemplates] = useState<Template[]>([]);
+
+  useEffect(() => {
+    supabase.from('job_templates').select('*').then(({ data }) => {
+      if (data) setTemplates(data as Template[]);
+    });
+  }, []);
+
+  const dutyTemplates = templates.filter(t => t.type === 'duties');
+  const reqTemplates = templates.filter(t => t.type === 'requirements');
+
+  const applyTemplate = (template: Template, field: 'description' | 'requirements') => {
+    const text = template.items.map((item, i) => `${i + 1}. ${item}`).join('\n');
+    if (field === 'description') {
+      setDescription(prev => prev ? `${prev}\n\nDuties and Responsibilities:\n${text}` : `Duties and Responsibilities:\n${text}`);
+    } else {
+      setRequirements(prev => prev ? `${prev}\n${text}` : text);
+    }
+    toast({ title: `${template.name} template applied` });
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrors({});
     const formData = new FormData(e.currentTarget);
     const raw = Object.fromEntries(formData.entries()) as Record<string, string>;
+    // Override with state values
+    raw.description = description;
+    raw.requirements = requirements;
 
     const result = submissionSchema.safeParse(raw);
     if (!result.success) {
@@ -53,6 +92,7 @@ const SubmitJob = () => {
       salary_range: result.data.salary_range || null,
       how_to_apply: result.data.how_to_apply,
       contact: result.data.contact,
+      closing_date: closingDate ? closingDate.toISOString() : null,
     });
 
     setIsSubmitting(false);
@@ -82,7 +122,7 @@ const SubmitJob = () => {
               <p className="text-muted-foreground mb-8">
                 Our team will review your submission and publish it within 24 hours. You'll receive a notification once it's live.
               </p>
-              <Button variant="accent" size="lg" onClick={() => setIsSubmitted(false)}>
+              <Button variant="accent" size="lg" onClick={() => { setIsSubmitted(false); setDescription(''); setRequirements(''); setClosingDate(undefined); }}>
                 Submit Another Job
               </Button>
             </div>
@@ -148,15 +188,99 @@ const SubmitJob = () => {
                   </div>
                 </div>
 
+                {/* Application Deadline */}
                 <div className="space-y-2">
-                  <Label htmlFor="description">Job Description *</Label>
-                  <Textarea id="description" name="description" placeholder="Describe the role, responsibilities, and what the ideal candidate looks like..." rows={5} required maxLength={5000} />
+                  <Label>Application Deadline (Optional)</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !closingDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {closingDate ? format(closingDate, "PPP") : "Select deadline date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={closingDate}
+                        onSelect={setClosingDate}
+                        disabled={(date) => date < new Date()}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                {/* Description with template picker */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="description">Job Description & Duties *</Label>
+                    {dutyTemplates.length > 0 && (
+                      <Select onValueChange={(v) => {
+                        const t = dutyTemplates.find(t => t.id === v);
+                        if (t) applyTemplate(t, 'description');
+                      }}>
+                        <SelectTrigger className="w-auto h-8 gap-1 text-xs border-dashed">
+                          <FileText className="h-3 w-3" />
+                          <SelectValue placeholder="Use template" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {dutyTemplates.map(t => (
+                            <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </div>
+                  <Textarea
+                    id="description"
+                    name="description"
+                    placeholder="Describe the role, responsibilities, and what the ideal candidate looks like..."
+                    rows={6}
+                    required
+                    maxLength={5000}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
                   {errors.description && <p className="text-sm text-destructive">{errors.description}</p>}
                 </div>
 
+                {/* Requirements with template picker */}
                 <div className="space-y-2">
-                  <Label htmlFor="requirements">Requirements (Optional)</Label>
-                  <Textarea id="requirements" name="requirements" placeholder="List qualifications, experience, and skills required..." rows={4} maxLength={5000} />
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="requirements">Requirements (Optional)</Label>
+                    {reqTemplates.length > 0 && (
+                      <Select onValueChange={(v) => {
+                        const t = reqTemplates.find(t => t.id === v);
+                        if (t) applyTemplate(t, 'requirements');
+                      }}>
+                        <SelectTrigger className="w-auto h-8 gap-1 text-xs border-dashed">
+                          <FileText className="h-3 w-3" />
+                          <SelectValue placeholder="Use template" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {reqTemplates.map(t => (
+                            <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </div>
+                  <Textarea
+                    id="requirements"
+                    name="requirements"
+                    placeholder="List qualifications, experience, and skills required..."
+                    rows={4}
+                    maxLength={5000}
+                    value={requirements}
+                    onChange={(e) => setRequirements(e.target.value)}
+                  />
                 </div>
 
                 <div className="space-y-2">
