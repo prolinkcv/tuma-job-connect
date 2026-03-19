@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { Filter, X } from 'lucide-react';
+import { isJobActive } from '@/lib/jobStatus';
+import { Filter, X, EyeOff, Eye } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import JobCard from '@/components/jobs/JobCard';
 import JobSearch from '@/components/jobs/JobSearch';
@@ -17,6 +18,7 @@ import { useJobs } from '@/hooks/useJobs';
 const Jobs = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
+  const [showExpired, setShowExpired] = useState(false);
   const { jobs, loading } = useJobs();
 
   const query = searchParams.get('q') || '';
@@ -44,6 +46,7 @@ const Jobs = () => {
 
   const filteredJobs = useMemo(() => {
     return jobs.filter((job) => {
+      if (!showExpired && !isJobActive(job)) return false;
       if (query) {
         const s = query.toLowerCase();
         if (!job.title.toLowerCase().includes(s) && !job.description.toLowerCase().includes(s) && !job.facility.toLowerCase().includes(s)) return false;
@@ -55,7 +58,7 @@ const Jobs = () => {
       if (jobType && job.job_type !== jobType) return false;
       return true;
     });
-  }, [jobs, query, location, facility, category, county, jobType]);
+  }, [jobs, query, location, facility, category, county, jobType, showExpired]);
 
   const hasActiveFilters = query || location || facility || category || county || jobType;
 
@@ -121,6 +124,17 @@ const Jobs = () => {
                     <X className="h-4 w-4 mr-2" />Clear Filters
                   </Button>
                 )}
+              </div>
+              <div className="flex items-center justify-between pt-2 border-t border-border mt-2">
+                <Button
+                  variant={showExpired ? 'secondary' : 'ghost'}
+                  size="sm"
+                  onClick={() => setShowExpired(!showExpired)}
+                  className="gap-2 text-xs"
+                >
+                  {showExpired ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
+                  {showExpired ? 'Showing expired jobs' : 'Expired jobs hidden'}
+                </Button>
               </div>
             </div>
           </div>
