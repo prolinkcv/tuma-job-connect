@@ -125,7 +125,17 @@ const Jobs = () => {
                   </Button>
                 )}
               </div>
-            </div>
+              <div className="flex items-center justify-between pt-2 border-t border-border mt-2">
+                <Button
+                  variant={showExpired ? 'secondary' : 'ghost'}
+                  size="sm"
+                  onClick={() => setShowExpired(!showExpired)}
+                  className="gap-2 text-xs"
+                >
+                  {showExpired ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
+                  {showExpired ? 'Showing expired jobs' : 'Expired jobs hidden'}
+                </Button>
+              </div>
           </div>
         </section>
 
