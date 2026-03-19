@@ -46,6 +46,7 @@ const Jobs = () => {
 
   const filteredJobs = useMemo(() => {
     return jobs.filter((job) => {
+      if (!showExpired && !isJobActive(job)) return false;
       if (query) {
         const s = query.toLowerCase();
         if (!job.title.toLowerCase().includes(s) && !job.description.toLowerCase().includes(s) && !job.facility.toLowerCase().includes(s)) return false;
@@ -57,7 +58,7 @@ const Jobs = () => {
       if (jobType && job.job_type !== jobType) return false;
       return true;
     });
-  }, [jobs, query, location, facility, category, county, jobType]);
+  }, [jobs, query, location, facility, category, county, jobType, showExpired]);
 
   const hasActiveFilters = query || location || facility || category || county || jobType;
 
