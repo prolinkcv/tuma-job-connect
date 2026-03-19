@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { isJobActive } from '@/lib/jobStatus';
 import { Filter, X } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import JobCard from '@/components/jobs/JobCard';
