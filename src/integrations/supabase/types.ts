@@ -14,8 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      custom_categories: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       employer_submissions: {
         Row: {
+          closing_date: string | null
           contact: string
           description: string
           facility_name: string
@@ -32,6 +54,7 @@ export type Database = {
           submitted_at: string
         }
         Insert: {
+          closing_date?: string | null
           contact: string
           description: string
           facility_name: string
@@ -48,6 +71,7 @@ export type Database = {
           submitted_at?: string
         }
         Update: {
+          closing_date?: string | null
           contact?: string
           description?: string
           facility_name?: string
@@ -62,6 +86,33 @@ export type Database = {
           salary_range?: string | null
           status?: string
           submitted_at?: string
+        }
+        Relationships: []
+      }
+      job_templates: {
+        Row: {
+          created_at: string
+          id: string
+          items: string[]
+          name: string
+          profession: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          items?: string[]
+          name: string
+          profession: string
+          type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          items?: string[]
+          name?: string
+          profession?: string
+          type?: string
         }
         Relationships: []
       }
