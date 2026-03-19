@@ -18,6 +18,7 @@ import { useJobs } from '@/hooks/useJobs';
 const Jobs = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
+  const [showExpired, setShowExpired] = useState(false);
   const { jobs, loading } = useJobs();
 
   const query = searchParams.get('q') || '';
