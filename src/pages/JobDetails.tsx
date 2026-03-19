@@ -10,14 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import AdPlaceholder from '@/components/ads/AdPlaceholder';
 import { useJob } from '@/hooks/useJobs';
-
-const statusConfig: Record<string, { label: string; className: string; description: string }> = {
-  open: { label: 'OPEN', className: 'bg-accent text-accent-foreground', description: 'Accepting applications' },
-  urgent: { label: 'URGENT', className: 'bg-urgent text-urgent-foreground', description: 'Hiring immediately' },
-  'closing-soon': { label: 'CLOSING SOON', className: 'bg-warning text-warning-foreground', description: 'Apply quickly' },
-  shortlisting: { label: 'SHORTLISTING', className: 'bg-primary text-primary-foreground', description: 'Reviewing applications' },
-  filled: { label: 'FILLED', className: 'bg-muted text-muted-foreground', description: 'Position filled' },
-};
+import { getJobStatusDisplay, isJobActive } from '@/lib/jobStatus';
 
 const JobDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -43,8 +36,8 @@ const JobDetails = () => {
     );
   }
 
-  const status = statusConfig[job.status] || statusConfig.open;
-  const isActive = job.status !== 'filled';
+  const status = getJobStatusDisplay(job);
+  const isActive = isJobActive(job);
 
   const handleShare = () => {
     const text = `Check out this job: ${job.title} at ${job.facility} - ${window.location.href}`;

@@ -3,22 +3,15 @@ import { MapPin, Building, Clock, Calendar, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { DbJob } from '@/hooks/useJobs';
+import { getJobStatusDisplay, isJobActive } from '@/lib/jobStatus';
 
 interface JobCardProps {
   job: DbJob;
 }
 
-const statusConfig: Record<string, { label: string; className: string }> = {
-  open: { label: 'OPEN', className: 'bg-accent text-accent-foreground' },
-  urgent: { label: 'URGENT', className: 'bg-urgent text-urgent-foreground animate-pulse-gentle' },
-  'closing-soon': { label: 'CLOSING SOON', className: 'bg-warning text-warning-foreground' },
-  shortlisting: { label: 'SHORTLISTING', className: 'bg-primary text-primary-foreground' },
-  filled: { label: 'FILLED', className: 'bg-muted text-muted-foreground' },
-};
-
 const JobCard = ({ job }: JobCardProps) => {
-  const status = statusConfig[job.status] || statusConfig.open;
-  const isActive = job.status !== 'filled';
+  const status = getJobStatusDisplay(job);
+  const isActive = isJobActive(job);
 
   return (
     <div className={`group relative bg-card rounded-xl border border-border p-5 transition-all duration-300 hover:shadow-card-hover hover:border-primary/20 ${!isActive ? 'opacity-75' : ''}`}>
